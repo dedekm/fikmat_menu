@@ -1,0 +1,24 @@
+#! /bin/bash
+
+# $1 - current game PID
+# $2 - menu PID
+
+MENU_WIN_ID=$(xdotool search --pid $2)
+
+while true
+do
+  IDLE=$(xprintidle)
+
+  sleep 1
+
+  if (( IDLE > 3000 )); then
+    # switch focus to menu app
+    wmctrl -ia $MENU_WIN_ID
+
+    # exit the currently running game
+    kill -9 $1
+
+    # exit the script
+    break
+  fi
+done
