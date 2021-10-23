@@ -76,6 +76,17 @@ func _input(event: InputEvent) -> void:
       KEY_RIGHT:
         _move_index(1)
         _update_thumbs()
+      KEY_ENTER:
+        print("launching " + games[index].name)
+        current_game_pid = OS.execute("games/" + games[index].filename, [], false)
+        print("current game PID - " + str(current_game_pid))
+        OS.execute("bin/create_pid_file", [current_game_pid, "game"], true)
+
+func _notification(what):
+    if what == MainLoop.NOTIFICATION_WM_FOCUS_IN:
+        print("focus in")
+    elif what == MainLoop.NOTIFICATION_WM_FOCUS_OUT:
+        print("focus out")
 
 func _move_index(n: int) -> void:
   var i := index + n

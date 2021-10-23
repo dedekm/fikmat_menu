@@ -1,0 +1,15 @@
+[Unit]
+Description=Fikmat Daemon
+
+[Service]
+Type=simple
+
+User=user
+Group=user
+
+ExecStart=/home/user/godot/fik_machine/bin/run_daemon
+
+SyslogIdentifier=fikmat_daemon
+
+[Install]
+WantedBy=default.target

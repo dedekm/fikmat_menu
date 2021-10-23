@@ -1,0 +1,13 @@
+#! /bin/bash
+
+MENU_WIN_ID=$(xdotool search --pid $(cat pids/menu.pid))
+GAME_PID=$(cat pids/game.pid)
+
+rm pids/game.pid
+
+import -window root tmp/screenshot.png
+
+# switch focus to menu app
+wmctrl -ia $MENU_WIN_ID
+# kill currently running game
+kill -9 $GAME_PID

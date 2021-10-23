@@ -1,0 +1,10 @@
+#! /bin/bash
+
+xinput test-xi2 --root 3 | gawk '/RawKeyRelease/ {getline; getline; print $2; fflush()}' | while read -r key;
+do
+  if [ "$key" == "9" ]; then
+    if test -f pids/game.pid; then
+      bin/end_game
+    fi
+  fi
+done

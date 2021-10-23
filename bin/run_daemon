@@ -1,0 +1,15 @@
+#! /bin/bash
+
+path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+cd "$path"
+cd ".."
+
+# get the X DISPLAY of the first logged-in user with a X session
+DISPLAY="$(
+  w --short --no-header \
+    | awk '{ if( match($3, ":") ) { print $3; exit; } }'
+)"
+export DISPLAY
+
+bin/idle_check &
+bin/esc_check
