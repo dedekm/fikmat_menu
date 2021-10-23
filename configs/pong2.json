@@ -1,4 +1,5 @@
 {
   "name": "PONG 2",
-  "filename": "pong2.x86_64"
+  "filename": "pong2.x86_64",
+  "thumb": "test1.png"
 }
