@@ -1,5 +1,6 @@
 {
-  "name": "PONG 2",
+  "title": "PONG 2",
+  "authors": "John Foe",
   "filename": "pong2.x86_64",
   "thumb": "test1.png"
 }

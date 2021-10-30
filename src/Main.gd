@@ -8,6 +8,7 @@ var current_game_pid : int
 var tween_speed := 0.5
 
 onready var tween := get_node("Tween")
+onready var game_description := get_node("GameDescription")
 
 func _ready() -> void:
   var configs = []
@@ -80,6 +81,10 @@ func _interpolate_thumb_rotation(thumb, degrees) -> void:
   tween.interpolate_property(thumb, "rotation_degrees", thumb.rotation_degrees, Vector3(90, degrees, 0), tween_speed, Tween.TRANS_LINEAR, Tween.EASE_IN)
 
 
+func _update_game_description(data) -> void:
+  game_description.text = data.title + "\n" + data.authors
+
+
 func _input(event: InputEvent) -> void:
   if event is InputEventKey and event.pressed:
     match event.scancode:
@@ -90,16 +95,18 @@ func _input(event: InputEvent) -> void:
         _move_index(1)
         _update_thumbs()
       KEY_ENTER:
-        print("launching " + games[index].name)
+        print("launching " + games[index].title)
         current_game_pid = OS.execute("games/" + games[index].filename, [], false)
         print("current game PID - " + str(current_game_pid))
         OS.execute("bin/create_pid_file", [current_game_pid, "game"], true)
 
-func _notification(what):
-    if what == MainLoop.NOTIFICATION_WM_FOCUS_IN:
-        print("focus in")
-    elif what == MainLoop.NOTIFICATION_WM_FOCUS_OUT:
-        print("focus out")
+
+func _notification(what) -> void:
+  if what == MainLoop.NOTIFICATION_WM_FOCUS_IN:
+    print("focus in")
+  elif what == MainLoop.NOTIFICATION_WM_FOCUS_OUT:
+    print("focus out")
+
 
 func _move_index(n: int) -> void:
   var i := index + n
@@ -110,4 +117,4 @@ func _move_index(n: int) -> void:
   else:
     index = index + n
 
-  print(games[index].name)
+  print(games[index].title)
