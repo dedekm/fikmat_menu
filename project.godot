@@ -10,9 +10,14 @@ config_version=4
 
 [application]
 
-config/name="Fik Machine"
+config/name="Fikmat Menu"
 run/main_scene="res://src/Main.tscn"
 config/icon="res://icon.png"
+
+[display]
+
+window/size/width=1280
+window/size/height=1024
 
 [physics]
 

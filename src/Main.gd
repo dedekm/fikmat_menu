@@ -56,14 +56,14 @@ func _ready() -> void:
 
 func _update_thumbs() -> void:
   for i in games.size():
-    var x = 2 + 0.5 * abs(i - index)
+    var x = 2 + 0.25 * abs(i - index)
     var thumb = thumbs[i]
 
     if i < index:
-      _interpolate_thumb_translation(thumb, -1 * x, -1)
+      _interpolate_thumb_translation(thumb, -1 * x, -1.5)
       _interpolate_thumb_rotation(thumb, 75)
     elif i > index:
-      _interpolate_thumb_translation(thumb, x, -1)
+      _interpolate_thumb_translation(thumb, x, -1.5)
       _interpolate_thumb_rotation(thumb, -75)
     else:
       _interpolate_thumb_translation(thumb, 0, 0)
