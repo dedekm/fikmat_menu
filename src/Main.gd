@@ -1,7 +1,6 @@
 extends Spatial
 
 var games = []
-var thumbs = []
 var index : int
 var current_game_pid : int
 
@@ -39,32 +38,43 @@ func _ready() -> void:
 
   index = floor(games.size() / 2)
 
-  for i in games.size():
+  for g in games:
     var thumb := MeshInstance.new()
     thumb.mesh = PlaneMesh.new()
-    var texture := load("res://assets/" + games[i].thumb)
+    var texture := load("res://assets/" + g.thumb)
     var material = SpatialMaterial.new()
     material.albedo_texture = texture
     thumb.mesh.surface_set_material(0, material)
     thumb.rotation_degrees.x = 90
 
     add_child(thumb)
-    thumbs.append(thumb)
+    g.thumb_instance = thumb
 
   _update_thumbs()
 
 
-func _update_thumbs() -> void:
+func _update_thumbs(direction = 0) -> void:
   for i in games.size():
-    var x = 2 + 0.25 * abs(i - index)
-    var thumb = thumbs[i]
+    var x = 2 + 0.3 * abs(i - index)
+    var thumb = games[i].thumb_instance
 
+    print(games[i].title, " i: ",i , " x: ", x)
+    print(i >= games.size() - 1)
     if i < index:
-      _interpolate_thumb_translation(thumb, -1 * x, -1.5)
-      _interpolate_thumb_rotation(thumb, 75)
+      if direction > 0 && i == 0:
+        print("moving to start - ", games[i].title)
+        _interpolate_thumb_translation(thumb, -1 * x, -1.5, false)
+        _interpolate_thumb_rotation(thumb, 75, false)
+      else:
+        _interpolate_thumb_translation(thumb, -1 * x, -1.5)
+        _interpolate_thumb_rotation(thumb, 75)
     elif i > index:
-      _interpolate_thumb_translation(thumb, x, -1.5)
-      _interpolate_thumb_rotation(thumb, -75)
+      if direction < 0 && i == games.size() - 1:
+        _interpolate_thumb_translation(thumb, x, -1.5, false)
+        _interpolate_thumb_rotation(thumb, -75, false)
+      else:
+        _interpolate_thumb_translation(thumb, x, -1.5)
+        _interpolate_thumb_rotation(thumb, -75)
     else:
       _interpolate_thumb_translation(thumb, 0, 0)
       _interpolate_thumb_rotation(thumb, 0)
@@ -73,12 +83,19 @@ func _update_thumbs() -> void:
 
   tween.start()
 
-func _interpolate_thumb_translation(thumb, x, z) -> void:
-  tween.interpolate_property(thumb, "translation", thumb.translation, Vector3(x, 0, z), tween_speed, Tween.TRANS_LINEAR, Tween.EASE_IN)
+
+func _interpolate_thumb_translation(thumb, x, z, animate = true) -> void:
+  if animate:
+    tween.interpolate_property(thumb, "translation", thumb.translation, Vector3(x, 0, z), tween_speed, Tween.TRANS_LINEAR, Tween.EASE_IN)
+  else:
+    thumb.translation = Vector3(x, 0, z)
 
 
-func _interpolate_thumb_rotation(thumb, degrees) -> void:
-  tween.interpolate_property(thumb, "rotation_degrees", thumb.rotation_degrees, Vector3(90, degrees, 0), tween_speed, Tween.TRANS_LINEAR, Tween.EASE_IN)
+func _interpolate_thumb_rotation(thumb, degrees, animate = true) -> void:
+  if animate:
+    tween.interpolate_property(thumb, "rotation_degrees", thumb.rotation_degrees, Vector3(90, degrees, 0), tween_speed, Tween.TRANS_LINEAR, Tween.EASE_IN)
+  else:
+    thumb.rotation_degrees = Vector3(90, degrees, 0)
 
 
 func _update_game_description(data) -> void:
@@ -90,10 +107,10 @@ func _input(event: InputEvent) -> void:
     match event.scancode:
       KEY_LEFT:
         _move_index(-1)
-        _update_thumbs()
+        _update_thumbs(-1)
       KEY_RIGHT:
         _move_index(1)
-        _update_thumbs()
+        _update_thumbs(1)
       KEY_ENTER:
         print("launching " + games[index].title)
         current_game_pid = OS.execute("games/" + games[index].filename, [], false)
@@ -109,12 +126,7 @@ func _notification(what) -> void:
 
 
 func _move_index(n: int) -> void:
-  var i := index + n
-  if i == games.size():
-    index = 0
-  elif i == -1:
-    index = games.size() - 1
-  else:
-    index = index + n
-
-  print(games[index].title)
+  if n > 0:
+    games.push_front(games.pop_back())
+  elif n < 0:
+    games.push_back(games.pop_front())
