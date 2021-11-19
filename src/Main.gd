@@ -36,6 +36,11 @@ func _ready() -> void:
     games.append(json_data)
     print(json_data)
 
+  var i := 0
+  while games.size() <= 9:
+    games.push_back(games[i].duplicate())
+    i += 1
+
   index = floor(games.size() / 2)
 
   for g in games:
