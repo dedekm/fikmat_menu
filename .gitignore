@@ -1,5 +1,14 @@
 # Import cache
 .import/
 
+assets/*
+!assets/.keep
+
+configs/*
+!configs/.keep
+
+games/*
+!games/.keep
+
 pids/*
 !pids/.keep
