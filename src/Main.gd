@@ -67,7 +67,6 @@ func _update_thumbs(direction = 0) -> void:
     print(i >= games.size() - 1)
     if i < index:
       if direction > 0 && i == 0:
-        print("moving to start - ", games[i].title)
         _interpolate_thumb_translation(thumb, -1 * x, -1.5, false)
         _interpolate_thumb_rotation(thumb, 75, false)
       else:
@@ -110,17 +109,17 @@ func _update_game_description(data) -> void:
 func _input(event: InputEvent) -> void:
   if event is InputEventKey and event.pressed:
     match event.scancode:
-      KEY_LEFT:
+      KEY_LEFT, KEY_A:
         _move_index(-1)
         _update_thumbs(-1)
-      KEY_RIGHT:
+      KEY_RIGHT, KEY_D:
         _move_index(1)
         _update_thumbs(1)
-      KEY_ENTER:
+      KEY_ENTER, KEY_V, KEY_B, KEY_K, KEY_L:
         print("launching " + games[index].title)
-        current_game_pid = OS.execute("games/" + games[index].filename, [], false)
+        current_game_pid = OS.execute("./games/" + games[index].filename, [], false)
         print("current game PID - " + str(current_game_pid))
-        OS.execute("bin/create_pid_file", [current_game_pid, "game"], true)
+        OS.execute("./bin/create_pid_file", [current_game_pid, "game"], true)
 
 
 func _notification(what) -> void:
