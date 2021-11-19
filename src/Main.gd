@@ -12,7 +12,7 @@ onready var game_description := get_node("GameDescription")
 func _ready() -> void:
   var configs = []
   var dir = Directory.new()
-  dir.open('res://configs')
+  dir.open('./configs')
   dir.list_dir_begin()
 
   var filename = dir.get_next()
@@ -46,7 +46,7 @@ func _ready() -> void:
   for g in games:
     var thumb := MeshInstance.new()
     thumb.mesh = PlaneMesh.new()
-    var texture := load("res://games/" + g.thumb)
+    var texture := load("./games/" + g.thumb)
     var material = SpatialMaterial.new()
     material.albedo_texture = texture
     thumb.mesh.surface_set_material(0, material)
