@@ -1,11 +1,11 @@
 # Import cache
 .import/
 
-assets/*
-!assets/.keep
-
 configs/*
 !configs/.keep
+
+fonts/*
+!fonts/.keep
 
 games/*
 !games/.keep
