@@ -10,6 +10,12 @@ onready var tween := get_node("Tween")
 onready var game_description := get_node("GameDescription")
 
 func _ready() -> void:
+  if OS.has_feature("standalone"):
+    OS.window_fullscreen = true
+    Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
+
+  OS.execute("./bin/create_pid_file", [OS.get_process_id(), "menu"], true)
+  
   var configs = []
   var dir = Directory.new()
   dir.open('./configs')

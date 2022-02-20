@@ -18,6 +18,11 @@ config/icon="res://icon.png"
 
 window/size/width=1280
 window/size/height=1024
+window/size/resizable=false
+
+[global]
+
+fulls=false
 
 [physics]
 
