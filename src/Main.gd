@@ -3,7 +3,8 @@ extends Spatial
 var games = []
 var index : int
 var current_game_pid : int
-
+var game_starting := false
+var game_starting_timer : Timer
 var tween_speed := 0.5
 
 onready var tween := get_node("Tween")
@@ -15,7 +16,12 @@ func _ready() -> void:
     Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 
   OS.execute("./bin/create_pid_file", [OS.get_process_id(), "menu"], true)
-  
+
+  game_starting_timer = Timer.new()
+  game_starting_timer.connect("timeout", self, "_game_started")
+  game_starting_timer.set_one_shot(true)
+  add_child(game_starting_timer)
+
   var configs = []
   var dir = Directory.new()
   dir.open('./configs')
@@ -69,8 +75,6 @@ func _update_thumbs(direction = 0) -> void:
     var x = 2 + 0.3 * abs(i - index)
     var thumb = games[i].thumb_instance
 
-    print(games[i].title, " i: ",i , " x: ", x)
-    print(i >= games.size() - 1)
     if i < index:
       if direction > 0 && i == 0:
         _interpolate_thumb_translation(thumb, -1 * x, -1.5, false)
@@ -122,17 +126,26 @@ func _input(event: InputEvent) -> void:
         _move_index(1)
         _update_thumbs(1)
       KEY_ENTER, KEY_V, KEY_B, KEY_K, KEY_L:
-        print("launching " + games[index].title)
-        current_game_pid = OS.execute("./games/" + games[index].filename, [], false)
-        print("current game PID - " + str(current_game_pid))
-        OS.execute("./bin/create_pid_file", [current_game_pid, "game"], true)
+        if !game_starting:
+          print("launching " + games[index].title)
+          current_game_pid = OS.execute("./games/" + games[index].filename, [], false)
+          print("current game PID - " + str(current_game_pid))
+          game_starting = true
+          game_starting_timer.set_wait_time(3)
+          game_starting_timer.start()
+          OS.execute("./bin/create_pid_file", [current_game_pid, "game"], true)
 
 
 func _notification(what) -> void:
   if what == MainLoop.NOTIFICATION_WM_FOCUS_IN:
+    game_starting = false
     print("focus in")
   elif what == MainLoop.NOTIFICATION_WM_FOCUS_OUT:
     print("focus out")
+
+
+func _game_started() -> void:
+  game_starting = false
 
 
 func _move_index(n: int) -> void:
