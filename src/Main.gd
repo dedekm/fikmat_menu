@@ -116,6 +116,13 @@ func _update_game_description(data) -> void:
   game_description.text = data.title + "\n" + data.authors
 
 
+func _set_system_volume(data) -> void:
+  if data.has("volume"):
+    OS.execute("./bin/set_volume", [data.volume], true)
+  else:
+    OS.execute("./bin/set_volume", [70], true)
+
+
 func _input(event: InputEvent) -> void:
   if event is InputEventKey and event.pressed:
     match event.scancode:
@@ -134,6 +141,7 @@ func _input(event: InputEvent) -> void:
           game_starting_timer.set_wait_time(3)
           game_starting_timer.start()
           OS.execute("./bin/create_pid_file", [current_game_pid, "game"], true)
+          _set_system_volume(games[index])
 
 
 func _notification(what) -> void:
