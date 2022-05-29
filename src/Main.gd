@@ -58,7 +58,11 @@ func _ready() -> void:
   for g in games:
     var thumb := MeshInstance.new()
     thumb.mesh = PlaneMesh.new()
-    var texture := load("./games/" + g.thumb)
+
+    var image = Image.new()
+    image.load("./games/" + g.thumb)
+    var texture = ImageTexture.new()
+    texture.create_from_image(image, 0)
     var material = SpatialMaterial.new()
     material.albedo_texture = texture
     thumb.mesh.surface_set_material(0, material)
