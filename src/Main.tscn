@@ -1,8 +1,8 @@
 [gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://src/Main.gd" type="Script" id=1]
-[ext_resource path="res://fonts/Matter-SemiBold.ttf" type="DynamicFontData" id=2]
-[ext_resource path="res://fonts/Schmalfette-Regular.ttf" type="DynamicFontData" id=3]
+[ext_resource path="res://fonts/text.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://fonts/header.ttf" type="DynamicFontData" id=3]
 
 [sub_resource type="Environment" id=1]
 background_mode = 1
@@ -39,14 +39,11 @@ margin_left = -512.0
 margin_top = -932.161
 margin_right = 512.0
 margin_bottom = -781.161
-custom_fonts/font = SubResource( 2 )
 custom_colors/font_color = Color( 1, 0, 0, 1 )
+custom_fonts/font = SubResource( 2 )
 text = "FIKMAT"
 align = 1
 valign = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="GameDescription" type="Label" parent="."]
 anchor_left = 0.5
@@ -62,6 +59,3 @@ text = "Title
 Author"
 align = 1
 valign = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
