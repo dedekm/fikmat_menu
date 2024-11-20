@@ -7,7 +7,13 @@ var game_starting := false
 var game_starting_timer : Timer
 var tween_speed := 0.5
 
+var settings : Dictionary
+
+var move_just_pressed := false
+var move_timer : Timer
+
 onready var tween := get_node("Tween")
+onready var header := get_node("Header")
 onready var game_description := get_node("GameDescription")
 
 func _ready() -> void:
@@ -17,10 +23,25 @@ func _ready() -> void:
 
   OS.execute("./bin/create_pid_file", [OS.get_process_id(), "menu"], true)
 
+  move_timer = Timer.new()
+  move_timer.connect("timeout", self, "_move_timeout")
+  move_timer.set_one_shot(true)
+  add_child(move_timer)
+
   game_starting_timer = Timer.new()
   game_starting_timer.connect("timeout", self, "_game_started")
   game_starting_timer.set_one_shot(true)
   add_child(game_starting_timer)
+
+  settings = _import_json("./settings.json")
+  print("current settings:")
+  print(settings)
+
+  if settings.has("header_color"):
+    header.set("custom_colors/font_color", Color(settings.header_color))
+
+  print("---")
+  print("games:")
 
   var configs = []
   var dir = Directory.new()
@@ -37,13 +58,8 @@ func _ready() -> void:
 
   configs.sort()
 
-  for config in configs:
-    var file = File.new()
-    file.open(config, file.READ)
-    var json = file.get_as_text()
-    var json_data = JSON.parse(json).result
-    file.close()
-
+  for config_path in configs:
+    var json_data = _import_json(config_path)
     # TODO: validate config data
     games.append(json_data)
     print(json_data)
@@ -131,11 +147,13 @@ func _input(event: InputEvent) -> void:
   if event is InputEventKey and event.pressed:
     match event.scancode:
       KEY_LEFT, KEY_A:
-        _move_index(-1)
-        _update_thumbs(-1)
+        if _can_move():
+          _move_index(-1)
+          _update_thumbs(-1)
       KEY_RIGHT, KEY_D:
-        _move_index(1)
-        _update_thumbs(1)
+        if _can_move():
+          _move_index(1)
+          _update_thumbs(1)
       KEY_ENTER, KEY_V, KEY_B, KEY_K, KEY_L:
         if !game_starting:
           print("launching " + games[index].title)
@@ -160,8 +178,36 @@ func _game_started() -> void:
   game_starting = false
 
 
+func _can_move() -> bool:
+  if move_just_pressed:
+    return false
+  else:
+    move_just_pressed = true
+    print('cantmove')
+    move_timer.set_wait_time(0.5)
+    move_timer.start()
+    return true
+
+func _move_timeout() -> void:
+  print('can move again')
+  move_just_pressed = false
+
+
 func _move_index(n: int) -> void:
   if n > 0:
     games.push_front(games.pop_back())
   elif n < 0:
     games.push_back(games.pop_front())
+
+
+func _import_json(path: String) -> Dictionary:
+  var file = File.new()
+  file.open(path, file.READ)
+  var json = file.get_as_text()
+  var data = JSON.parse(json).result
+  file.close()
+
+  if data:
+    return data
+  else:
+    return {}
